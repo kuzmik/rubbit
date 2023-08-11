@@ -4,7 +4,7 @@ require 'rubocop/rake_task'
 task default: :spec
 
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.rspec_opts = '-c'
+  t.rspec_opts = '-c --format=documentation'
 end
 
 RuboCop::RakeTask.new(:rubocop) do |task|

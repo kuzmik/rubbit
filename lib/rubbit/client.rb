@@ -2,9 +2,7 @@ module Rubbit
   # HTTP Client that connects to the FROG api and downloads croaks
   class Client
     def initialize(args = {})
-      @endpoint = args[:endpoint] || 'http://frog.tips/api/1/tips'
-      @headers = { 'Accept' => 'application/der-stream' }
-      @headers << args[:headers] if args[:headers]
+      @endpoint = args[:endpoint] || 'https://frog.tips/api/1/tips'
       @cache = args[:cache]
     end
 
@@ -20,21 +18,19 @@ module Rubbit
       end
 
       begin
-        tips = open(@endpoint, @headers).read
+        tips = URI.open(@endpoint).read
       rescue StandardError => ex
         puts "Error: Unable to fetch new FROG tips, please check your owners manual, pages 45-47. Message: #{ex.message}"
       end
 
-      decoded_tips = current.merge(Decoder.decode(tips))
-
       # Save the tips to the local cache
       if @cache
         File.open(@cache, 'w') do |dump|
-          dump.write(decoded_tips.sort.to_h.to_yaml)
+          dump.write(tips.sort.to_h.to_yaml)
         end
       end
 
-      @frog_tips = decoded_tips
+      @frog_tips = tips
     end
 
     # Get a random FROG tip from either the cache or the API
